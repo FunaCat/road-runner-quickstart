@@ -25,12 +25,11 @@ import org.opencv.imgproc.Imgproc;
 import java.util.concurrent.TimeUnit;
 
 
-public class AutonomousBlue extends LinearOpMode {
+public class AutonomousBlue2 extends LinearOpMode {
     public static class BLUEIDENTIFICATION implements VisionProcessor {
         Mat mixture_LEFT = new Mat();
         Mat mixture_MIDDLE = new Mat();
         Mat mixture_RIGHT = new Mat();
-        private boolean blueDetected = false;
         private boolean propLeft = false;
         private boolean propMiddle = false;
         private boolean propRight = false;
@@ -116,9 +115,8 @@ public class AutonomousBlue extends LinearOpMode {
                 .setDrawTagOutline(true)
                 .build();
         visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(
-                WebcamName.class, "Webcam 1"), blueIdentificationProcess, redIdentificationProcess, tagProcessor);
+                WebcamName.class, "Webcam 1"), blueIdentificationProcess, tagProcessor);
         visionPortal.setProcessorEnabled(blueIdentificationProcess, false);
-        visionPortal.setProcessorEnabled(redIdentificationProcess, false);
 
         waitForStart();
 
@@ -137,14 +135,11 @@ public class AutonomousBlue extends LinearOpMode {
             } while (aprilTagNotFound);
 
             //depending on team head to these locations using RR
-            Pose2d blue1 = new Pose2d(36, 54, Math.toRadians(270));
             Pose2d blue2 = new Pose2d(-36, 54, Math.toRadians(270));
-            Pose2d red1 = new Pose2d(36, -54, Math.toRadians(90));
-            Pose2d red2 = new Pose2d(-36, -54, Math.toRadians(90));
 
             // TODO Fill out pose estimate with the correct position
             drive.setPoseEstimate();
-            
+
 
             visionPortal.setProcessorEnabled(blueIdentificationProcess, true);
             dropPixelAtSpikeVoid();
@@ -351,7 +346,7 @@ public class AutonomousBlue extends LinearOpMode {
         // TODO: Enter the type for variable named roboty
         double roboty = //y coordinate RR;
 
-        armExtension = hardwareMap.get(DcMotor.class, "armExtension");
+                armExtension = hardwareMap.get(DcMotor.class, "armExtension");
         armBase = hardwareMap.get(DcMotor.class, "armBase");
         wrist = hardwareMap.get(Servo.class, "wrist");
         claw = hardwareMap.get(Servo.class, "claw");
@@ -359,7 +354,7 @@ public class AutonomousBlue extends LinearOpMode {
         // Put initialization blocks here.
         // set target as 1 for the board, and 2 for the spikes
 
-            // only run this when the robot has the pixel (using autopickup
+        // only run this when the robot has the pixel (using autopickup
         runningautodropoff = 1;
         while (runningautodropoff == 1) {
             // update robotx, roboty, and robotbearing here
@@ -400,4 +395,5 @@ public class AutonomousBlue extends LinearOpMode {
         }
     }
 }
+
 
