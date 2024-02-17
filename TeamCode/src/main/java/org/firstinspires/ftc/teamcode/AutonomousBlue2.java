@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import android.graphics.Canvas;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -25,6 +26,7 @@ import org.opencv.imgproc.Imgproc;
 import java.util.concurrent.TimeUnit;
 
 
+@Autonomous
 public class AutonomousBlue2 extends LinearOpMode {
     public static class BLUEIDENTIFICATION implements VisionProcessor {
         Mat mixture_LEFT = new Mat();
@@ -138,7 +140,7 @@ public class AutonomousBlue2 extends LinearOpMode {
             Pose2d blue2 = new Pose2d(-36, 54, Math.toRadians(270));
 
             // TODO Fill out pose estimate with the correct position
-            drive.setPoseEstimate();
+            drive.setPoseEstimate(blue2);
 
 
             visionPortal.setProcessorEnabled(blueIdentificationProcess, true);
@@ -333,67 +335,7 @@ public class AutonomousBlue2 extends LinearOpMode {
         }
     }
 
-    public void dropOff(int target) { //1 = board 2 = spikes
-        int xtarget;
-        int runningautodropoff;
-        // TODO: Enter the type for variable named target
-        int ytarget;
-        int targetbearing;
-        // TODO: Enter the type for variable named robotbearing
-        double robotbearing = //bearing RR;
-        // TODO: Enter the type for variable named robotx
-        double robotx = //xcoordinate RR;
-        // TODO: Enter the type for variable named roboty
-        double roboty = //y coordinate RR;
 
-                armExtension = hardwareMap.get(DcMotor.class, "armExtension");
-        armBase = hardwareMap.get(DcMotor.class, "armBase");
-        wrist = hardwareMap.get(Servo.class, "wrist");
-        claw = hardwareMap.get(Servo.class, "claw");
-
-        // Put initialization blocks here.
-        // set target as 1 for the board, and 2 for the spikes
-
-        // only run this when the robot has the pixel (using autopickup
-        runningautodropoff = 1;
-        while (runningautodropoff == 1) {
-            // update robotx, roboty, and robotbearing here
-            if (target == 1) {
-                xtarget = 0;
-                ytarget = 0;
-                targetbearing = 0;
-                // move to the board (set x and y target to the board pos and move to it using roadrunner)
-                if (robotx == xtarget && roboty == ytarget && robotbearing == targetbearing) {
-                    armExtension.setTargetPosition(0);
-                    armBase.setTargetPosition(0);
-                    wrist.setPosition(0);
-                    if (armBase.getCurrentPosition() == 0 && armExtension.getCurrentPosition() == 0 && wrist.getPosition() == 0) {
-                        claw.setPosition(0);
-                        if (claw.getPosition() == 0) {
-                            runningautodropoff = 0;
-                            break;
-                        }
-                    }
-                }
-            } else if (target == 2) {
-                xtarget = 0;
-                ytarget = 0;
-                // move to the spike (set x and y target to the spike pos and move to it using roadrunner)
-                if (robotx == xtarget && roboty == ytarget && robotbearing == targetbearing) {
-                    armExtension.setTargetPosition(0);
-                    armBase.setTargetPosition(0);
-                    wrist.setPosition(0);
-                    if (armBase.getCurrentPosition() == 0 && armExtension.getCurrentPosition() == 0 && wrist.getPosition() == 0) {
-                        claw.setPosition(0);
-                        if (claw.getPosition() == 0) {
-                            runningautodropoff = 0;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-    }
 }
 
 

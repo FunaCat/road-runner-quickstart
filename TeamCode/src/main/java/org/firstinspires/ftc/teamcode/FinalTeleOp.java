@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
-@TeleOp(name = "wheelsJava")
+@TeleOp(name = "FinalTeleOp")
 public class FinalTeleOp extends LinearOpMode {
 
     private Servo drone;

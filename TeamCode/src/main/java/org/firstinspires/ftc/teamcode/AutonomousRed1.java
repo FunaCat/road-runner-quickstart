@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import android.graphics.Canvas;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
@@ -25,12 +27,13 @@ import org.opencv.imgproc.Imgproc;
 import java.util.concurrent.TimeUnit;
 
 
+@Autonomous
 public class AutonomousRed1 extends LinearOpMode {
-    public static class REDIDENTIFICATION implements VisionProcessor {
+    public static class BLUEIDENTIFICATION implements VisionProcessor {
         Mat mixture_LEFT = new Mat();
         Mat mixture_MIDDLE = new Mat();
         Mat mixture_RIGHT = new Mat();
-        private boolean redDetected = false;
+        private boolean blueDetected = false;
         private boolean propLeft = false;
         private boolean propMiddle = false;
         private boolean propRight = false;
@@ -93,7 +96,8 @@ public class AutonomousRed1 extends LinearOpMode {
             //nothing here
         }
     }//end process
-    REDIDENTIFICATION redIdentificationProcess;
+
+    BLUEIDENTIFICATION blueIdentificationProcess;
     VisionPortal visionPortal;
     static final double Y_SHIFT = 6;
     double coordinateX = 0;
@@ -104,49 +108,24 @@ public class AutonomousRed1 extends LinearOpMode {
     private DcMotor armExtension;
     private Servo claw;
 
-    private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
+    private AprilTagProcessor aprilTag;
+    // Used for managing the AprilTag detection process.
+
+
 
     @Override
     public void runOpMode() {
-        AprilTagProcessor tagProcessor = new AprilTagProcessor.Builder()
-                .setDrawAxes(true)
-                .setDrawCubeProjection(true)
-                .setDrawTagID(true)
-                .setDrawTagOutline(true)
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        Pose2d blue1 = new Pose2d(12, 54, Math.toRadians(270));
+        drive.setPoseEstimate(blue1);
+        Trajectory traj1 = drive.trajectoryBuilder(new Pose2d())
+                .strafeRight(18)
                 .build();
-        visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(
-                WebcamName.class, "Webcam 1"), redIdentificationProcess, tagProcessor);
-        visionPortal.setProcessorEnabled(redIdentificationProcess, false);
 
         waitForStart();
-
-        tagProcessor.setPoseSolver(AprilTagProcessor.PoseSolver.OPENCV_IPPE_SQUARE);
-
-        while (opModeIsActive()) {
-            boolean aprilTagNotFound = false;
-            double ANGLE = 30;
-            SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-            drive = new SampleMecanumDrive(hardwareMap);
-            //spin to find april tags
-
-            do {
-                aprilTagNotFound = checkCoords(tagProcessor, aprilTagNotFound);
-                drive.turn(Math.toRadians(ANGLE));
-            } while (aprilTagNotFound);
-
-            //depending on team head to these locations using RR
-            Pose2d red1 = new Pose2d(36, -54, Math.toRadians(90));
-
-            // TODO Fill out pose estimate with the correct position
-            drive.setPoseEstimate();
-
-
-            visionPortal.setProcessorEnabled(blueIdentificationProcess, true);
-            dropPixelAtSpikeVoid();
-            if (!dropPixelAtSpikeBoolean()) {
-                dropPixelAtSpikeVoid();
-            }
-        }
+        // TODO Pick up pixel
+        drive.followTrajectory(traj1);
+        // TODO Drop Pixel
     }
 
     public boolean setManualExposure(int exposureMS, int gain) {
@@ -297,102 +276,26 @@ public class AutonomousRed1 extends LinearOpMode {
             return false;
         }
     }
-
-    public void pickUp() {
-        int runningautopixel;
-
+    public void pickUpPixel() {
         armBase = hardwareMap.get(DcMotor.class, "armBase");
         wrist = hardwareMap.get(Servo.class, "wrist");
         armExtension = hardwareMap.get(DcMotor.class, "armExtension");
         claw = hardwareMap.get(Servo.class, "claw");
+        double initialBase = armBase.getCurrentPosition();
+        double initialExtension = armExtension.getCurrentPosition();
 
-        // Put initialization blocks here.
-        waitForStart();
-        if (opModeIsActive()) {
-            // Put run blocks here.
-            runningautopixel = 1;
-            armExtension.setTargetPosition(-14);
-            claw.setPosition(0.78);
-            while (runningautopixel == 1) {
-                if (armExtension.getCurrentPosition() == -14) {
-                    if (claw.getPosition() == 0.78) {
-                        wrist.setPosition(0.9);
-                        if (wrist.getPosition() == 0.9) {
-                            armBase.setTargetPosition(0);
-                            if (armBase.getCurrentPosition() == 0) {
-                                claw.setPosition(0.9);
-                                if (claw.getPosition() == 0.9) {
-                                    runningautopixel = 0;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        if ((armExtension.getCurrentPosition() == -14) && (claw.getPosition() == .78)) {
+            wrist.setPosition(0.9);
+            armBase.setTargetPosition(0);
+            claw.setPosition(0.9);
+
         }
     }
-
-    public void dropOff(int target) { //1 = board 2 = spikes
-        int xtarget;
-        int runningautodropoff;
-        // TODO: Enter the type for variable named target
-        int ytarget;
-        int targetbearing;
-        // TODO: Enter the type for variable named robotbearing
-        double robotbearing = //bearing RR;
-        // TODO: Enter the type for variable named robotx
-        double robotx = //xcoordinate RR;
-        // TODO: Enter the type for variable named roboty
-        double roboty = //y coordinate RR;
-
-                armExtension = hardwareMap.get(DcMotor.class, "armExtension");
-        armBase = hardwareMap.get(DcMotor.class, "armBase");
-        wrist = hardwareMap.get(Servo.class, "wrist");
-        claw = hardwareMap.get(Servo.class, "claw");
-
-        // Put initialization blocks here.
-        // set target as 1 for the board, and 2 for the spikes
-
-        // only run this when the robot has the pixel (using autopickup
-        runningautodropoff = 1;
-        while (runningautodropoff == 1) {
-            // update robotx, roboty, and robotbearing here
-            if (target == 1) {
-                xtarget = 0;
-                ytarget = 0;
-                targetbearing = 0;
-                // move to the board (set x and y target to the board pos and move to it using roadrunner)
-                if (robotx == xtarget && roboty == ytarget && robotbearing == targetbearing) {
-                    armExtension.setTargetPosition(0);
-                    armBase.setTargetPosition(0);
-                    wrist.setPosition(0);
-                    if (armBase.getCurrentPosition() == 0 && armExtension.getCurrentPosition() == 0 && wrist.getPosition() == 0) {
-                        claw.setPosition(0);
-                        if (claw.getPosition() == 0) {
-                            runningautodropoff = 0;
-                            break;
-                        }
-                    }
-                }
-            } else if (target == 2) {
-                xtarget = 0;
-                ytarget = 0;
-                // move to the spike (set x and y target to the spike pos and move to it using roadrunner)
-                if (robotx == xtarget && roboty == ytarget && robotbearing == targetbearing) {
-                    armExtension.setTargetPosition(0);
-                    armBase.setTargetPosition(0);
-                    wrist.setPosition(0);
-                    if (armBase.getCurrentPosition() == 0 && armExtension.getCurrentPosition() == 0 && wrist.getPosition() == 0) {
-                        claw.setPosition(0);
-                        if (claw.getPosition() == 0) {
-                            runningautodropoff = 0;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+    public void dropPixel() {
+        armExtension.setTargetPosition(0);
+        armBase.setTargetPosition(0);
+        wrist.setPosition(0);
+        armExtension.setTargetPosition(0);
     }
 }
 
