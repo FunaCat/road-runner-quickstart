@@ -135,6 +135,9 @@ public class AutonomousBlue extends LinearOpMode {
             Pose2d blue2 = new Pose2d(-36, 54, Math.toRadians(270));
             Pose2d red1 = new Pose2d(36, -54, Math.toRadians(90));
             Pose2d red2 = new Pose2d(-36, -54, Math.toRadians(90));
+
+            // TODO Fill out pose estimate with the correct position
+            drive.setPoseEstimate();
             
 
             visionPortal.setProcessorEnabled(blueIdentificationProcess, true);
