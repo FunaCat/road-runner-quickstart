@@ -60,8 +60,8 @@ public class AutonomousRed1 extends LinearOpMode {
             Imgproc.cvtColor(input, mixture_LEFT, Imgproc.COLOR_RGB2HSV);
             Imgproc.cvtColor(input, mixture_MIDDLE, Imgproc.COLOR_RGB2HSV);
             Imgproc.cvtColor(input, mixture_RIGHT, Imgproc.COLOR_RGB2HSV);
-            Scalar lowHSV = new Scalar(92, 50, 60);
-            Scalar highHSV = new Scalar(160, 250, 250);
+            Scalar lowHSV = new Scalar(0, 70, 90);
+            Scalar highHSV = new Scalar(8,300, 250);
             Core.inRange(mixture_LEFT, lowHSV, highHSV, mixture_LEFT);
             Core.inRange(mixture_MIDDLE, lowHSV, highHSV, mixture_MIDDLE);
             Core.inRange(mixture_RIGHT, lowHSV, highHSV, mixture_RIGHT);
@@ -135,7 +135,7 @@ public class AutonomousRed1 extends LinearOpMode {
             } while (aprilTagNotFound);
 
             //depending on team head to these locations using RR
-            Pose2d red1 = new Pose2d(36, -54, Math.toRadians(90));
+            Pose2d red1 = new Pose2d(12, -54, Math.toRadians(90));
 
             // TODO Fill out pose estimate with the correct position
             drive.setPoseEstimate();
