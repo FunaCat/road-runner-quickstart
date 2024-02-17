@@ -125,7 +125,7 @@ public class AutonomousBlue2 extends LinearOpMode {
         while (opModeIsActive()) {
             boolean aprilTagNotFound = false;
             double ANGLE = 30;
-            SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+            SampleMecanumDrive drive;
             drive = new SampleMecanumDrive(hardwareMap);
             //spin to find april tags
 
@@ -142,9 +142,9 @@ public class AutonomousBlue2 extends LinearOpMode {
 
 
             visionPortal.setProcessorEnabled(blueIdentificationProcess, true);
-            dropPixelAtSpikeVoid();
-            if (!dropPixelAtSpikeBoolean()) {
-                dropPixelAtSpikeVoid();
+            propDetected();
+            if (!propDetectedBoolean()) {
+                propDetected();
             }
         }
     }
@@ -267,7 +267,7 @@ public class AutonomousBlue2 extends LinearOpMode {
         return aprilTagNotFound;
     }
 
-    public void dropPixelAtSpikeVoid() { //returns true if drops
+    public void propDetected() { //returns true if drops
         if (blueIdentificationProcess.propLeft) {
             //bearing 90
             //drop pixel
@@ -280,7 +280,7 @@ public class AutonomousBlue2 extends LinearOpMode {
         }
     }
 
-    public boolean dropPixelAtSpikeBoolean() { //returns true if drops
+    public boolean propDetectedBoolean() { //returns true if drops
         if (blueIdentificationProcess.propLeft) {
             //bearing 90
             //drop pixel
