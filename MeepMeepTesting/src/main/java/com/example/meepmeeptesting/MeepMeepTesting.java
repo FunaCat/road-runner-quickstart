@@ -13,20 +13,22 @@ import javax.imageio.ImageIO;
 
 public class MeepMeepTesting {
     public static void main(String[] args) {
-        MeepMeep meepMeep = new MeepMeep(800);
+        Pose2d blue1 = new Pose2d(12, 54, Math.toRadians(270));
+
+        MeepMeep meepMeep = new MeepMeep(900);
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(48, 30, Math.toRadians(180), Math.toRadians(180), 18.10)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                                .forward(30)
+                        drive.trajectorySequenceBuilder(blue1)
+                                .forward(36)
                                 .turn(Math.toRadians(90))
-                                .forward(30)
+                                .forward(36)
                                 .turn(Math.toRadians(90))
-                                .forward(30)
+                                .forward(36)
                                 .turn(Math.toRadians(90))
-                                .forward(30)
+                                .forward(36)
                                 .turn(Math.toRadians(90))
                                 .build()
                 );
