@@ -23,18 +23,12 @@ public class MeepMeepTesting {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(blue1)
                                 .forward(36)
-                                .turn(Math.toRadians(90))
-                                .forward(36)
-                                .turn(Math.toRadians(90))
-                                .forward(36)
-                                .turn(Math.toRadians(90))
-                                .forward(36)
-                                .turn(Math.toRadians(90))
+                                .turn(Math.toRadians(-90))
                                 .build()
                 );
 
-        meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_LIGHT)
-                .setDarkMode(false)
+        meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
+                .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myBot)
                 .start();
