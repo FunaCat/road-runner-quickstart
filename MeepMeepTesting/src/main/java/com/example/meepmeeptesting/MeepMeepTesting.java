@@ -1,0 +1,36 @@
+package com.example.meepmeeptesting;
+
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.noahbres.meepmeep.MeepMeep;
+import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
+import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
+
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+public class MeepMeepTesting {
+    public static void main(String[] args) {
+        Pose2d blue1 = new Pose2d(12, 54, Math.toRadians(270));
+
+        MeepMeep meepMeep = new MeepMeep(900);
+
+        RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
+                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+                .setConstraints(48, 30, Math.toRadians(180), Math.toRadians(180), 18.10)
+                .followTrajectorySequence(drive ->
+                        drive.trajectorySequenceBuilder(blue1)
+                                .forward(36)
+                                .turn(Math.toRadians(-90))
+                                .build()
+                );
+
+        meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
+                .setDarkMode(true)
+                .setBackgroundAlpha(0.95f)
+                .addEntity(myBot)
+                .start();
+    }
+}
