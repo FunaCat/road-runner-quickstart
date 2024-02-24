@@ -107,6 +107,7 @@ public class AutonomousRed1 extends LinearOpMode {
     private Servo wrist;
     private DcMotor armExtension;
     private Servo claw;
+    private Servo winchLock;
 
     private AprilTagProcessor aprilTag;
     // Used for managing the AprilTag detection process.
@@ -115,10 +116,11 @@ public class AutonomousRed1 extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        winchLock.setPosition(1);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d blue1 = new Pose2d(12, 54, Math.toRadians(270));
-        drive.setPoseEstimate(blue1);
-        Trajectory traj1 = drive.trajectoryBuilder(new Pose2d())
+        Pose2d red1 = new Pose2d(12, 54, Math.toRadians(270));
+        drive.setPoseEstimate(red1);
+        Trajectory traj1 = drive.trajectoryBuilder(red1)
                 .strafeRight(18)
                 .build();
 
