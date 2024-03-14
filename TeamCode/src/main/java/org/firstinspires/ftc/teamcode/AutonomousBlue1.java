@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import android.graphics.Canvas;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
@@ -27,13 +25,11 @@ import org.opencv.imgproc.Imgproc;
 import java.util.concurrent.TimeUnit;
 
 
-@Autonomous
 public class AutonomousBlue1 extends LinearOpMode {
     public static class BLUEIDENTIFICATION implements VisionProcessor {
         Mat mixture_LEFT = new Mat();
         Mat mixture_MIDDLE = new Mat();
         Mat mixture_RIGHT = new Mat();
-        private boolean blueDetected = false;
         private boolean propLeft = false;
         private boolean propMiddle = false;
         private boolean propRight = false;
@@ -107,38 +103,73 @@ public class AutonomousBlue1 extends LinearOpMode {
     private Servo wrist;
     private DcMotor armExtension;
     private Servo claw;
-    private Servo winchLock;
-
-    private AprilTagProcessor aprilTag;
-    // Used for managing the AprilTag detection process.
-
-
-
+    private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
 
     @Override
     public void runOpMode() {
-        armBase.setTargetPosition(armBase.getCurrentPosition());
-        armBase.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armBase.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        armBase.setPower(1);
-        winchLock.setPosition(1);
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d blue1 = new Pose2d(12, 54, Math.toRadians(270));
-        drive.setPoseEstimate(blue1);
-        Trajectory traj1 = drive.trajectoryBuilder(blue1)
-                .strafeLeft(55)
+        boolean rotatedright = false;
+        boolean rotatedleft = false;
+        AprilTagProcessor tagProcessor = new AprilTagProcessor.Builder()
+                .setDrawAxes(true)
+                .setDrawCubeProjection(true)
+                .setDrawTagID(true)
+                .setDrawTagOutline(true)
                 .build();
+        visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(
+                WebcamName.class, "Webcam 1"), blueIdentificationProcess, tagProcessor);
+        visionPortal.setProcessorEnabled(blueIdentificationProcess, false);
 
         waitForStart();
-        // TODO Pick up pixel
 
+        tagProcessor.setPoseSolver(AprilTagProcessor.PoseSolver.OPENCV_IPPE_SQUARE);
 
-        armBase.setTargetPosition(armBase.getCurrentPosition() + 30);
+        while (opModeIsActive()) {
+            //move forward
+            drive = new SampleMecanumDrive(hardwareMap);
 
-
-        drive.followTrajectory(traj1);
-        // TODO Drop Pixel
-    }
+            visionPortal.setProcessorEnabled(blueIdentificationProcess, true);
+            if (blueIdentificationProcess.propLeft) {
+                rotatedleft = true;
+            }
+            else if (blueIdentificationProcess.propMiddle) {
+                //rotate
+            }
+            else if (blueIdentificationProcess.propRight) {
+                rotatedright = true;
+                //rotate right
+            }
+            armBase = hardwareMap.get(DcMotor.class, "armBase");
+            wrist = hardwareMap.get(Servo.class, "wrist");
+            armExtension = hardwareMap.get(DcMotor.class, "armExtension");
+            claw = hardwareMap.get(Servo.class, "claw");
+            int runningautopixel = 1;
+            armExtension.setTargetPosition(-14);
+            claw.setPosition(0.78);
+            while (runningautopixel == 1) {
+                if (armExtension.getCurrentPosition() == -14) {
+                    if (claw.getPosition() == 0.78) {
+                        wrist.setPosition(0.9);
+                        if (wrist.getPosition() == 0.9) {
+                            armBase.setTargetPosition(0);
+                            if (armBase.getCurrentPosition() == 0) {
+                                claw.setPosition(0.9);
+                                if (claw.getPosition() == 0.9) {
+                                    runningautopixel = 0;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (rotatedright) {
+                //counter
+            }
+            else if (rotatedleft) {
+                //counter
+            }
+            //move forward
+        }
 
     public boolean setManualExposure(int exposureMS, int gain) {
         // Ensure Vision Portal has been setup.
@@ -195,56 +226,48 @@ public class AutonomousBlue1 extends LinearOpMode {
                 case 1: {
                     coordinateX = calculatePositionX(60, tag.ftcPose.y);
                     coordinateY = (calculatePositionY(-42, tag.ftcPose.x) + Y_SHIFT);
-                    heading = 90;
                     aprilTagNotFound = false;
                     break;
                 }
                 case 2: {
                     coordinateX = calculatePositionX(60, tag.ftcPose.y);
                     coordinateY = (calculatePositionY(-36, tag.ftcPose.x) + Y_SHIFT);
-                    heading = 90;
                     aprilTagNotFound = false;
                     break;
                 }
                 case 3: {
                     coordinateX = calculatePositionX(60, tag.ftcPose.y);
                     coordinateY = (calculatePositionY(-30, tag.ftcPose.x) + Y_SHIFT);
-                    heading = 90;
                     aprilTagNotFound = false;
                     break;
                 }
                 case 4: {
                     coordinateX = calculatePositionX(60, tag.ftcPose.y);
                     coordinateY = (calculatePositionY(30, tag.ftcPose.x) + Y_SHIFT);
-                    heading = 90;
                     aprilTagNotFound = false;
                     break;
                 }
                 case 5: {
                     coordinateX = calculatePositionX(60, tag.ftcPose.y);
                     coordinateY = (calculatePositionY(36, tag.ftcPose.x) + Y_SHIFT);
-                    heading = 90;
                     aprilTagNotFound = false;
                     break;
                 }
                 case 6: {
                     coordinateX = calculatePositionX(60, tag.ftcPose.y);
                     coordinateY = (calculatePositionY(42, tag.ftcPose.x) + Y_SHIFT);
-                    heading = 90;
                     aprilTagNotFound = false;
                     break;
                 }
                 case 7: {
                     coordinateX = calculatePositionX(-72, tag.ftcPose.y);
                     coordinateY = (calculatePositionY(42, tag.ftcPose.x) + Y_SHIFT);
-                    heading = 270;
                     aprilTagNotFound = false;
                     break;
                 }
                 case 10: {
                     coordinateX = calculatePositionX(-72, tag.ftcPose.y);
                     coordinateY = (calculatePositionY(-42, tag.ftcPose.x) + Y_SHIFT);
-                    heading = 270;
                     aprilTagNotFound = false;
                     break;
                 }
@@ -258,56 +281,102 @@ public class AutonomousBlue1 extends LinearOpMode {
         return aprilTagNotFound;
     }
 
-    public void dropPixelAtSpikeVoid() { //returns true if drops
-        if (blueIdentificationProcess.propLeft) {
-            //bearing 90
-            //drop pixel
-        } else if (blueIdentificationProcess.propMiddle) {
-            // bearing = 0
-            //drop pixel
-        } else if (blueIdentificationProcess.propRight) {
-            //bearing = 270
-            //drop pixel
-        }
-    }
+    public void pickUp() {
+        int runningautopixel;
 
-    public boolean dropPixelAtSpikeBoolean() { //returns true if drops
-        if (blueIdentificationProcess.propLeft) {
-            //bearing 90
-            //drop pixel
-            return true;
-        } else if (blueIdentificationProcess.propMiddle) {
-            // bearing = 0
-            //drop pixel
-            return true;
-        } else if (blueIdentificationProcess.propRight) {
-            //bearing = 270
-            //drop pixel
-            return true;
-        }  else {
-            return false;
-        }
-    }
-    public void pickUpPixel() {
         armBase = hardwareMap.get(DcMotor.class, "armBase");
         wrist = hardwareMap.get(Servo.class, "wrist");
         armExtension = hardwareMap.get(DcMotor.class, "armExtension");
         claw = hardwareMap.get(Servo.class, "claw");
-        double initialBase = armBase.getCurrentPosition();
-        double initialExtension = armExtension.getCurrentPosition();
 
-        if ((armExtension.getCurrentPosition() == -14) && (claw.getPosition() == .78)) {
-            wrist.setPosition(0.9);
-            armBase.setTargetPosition(0);
-            claw.setPosition(0.9);
-
+        // Put initialization blocks here.
+        waitForStart();
+        if (opModeIsActive()) {
+            // Put run blocks here.
+            runningautopixel = 1;
+            armExtension.setTargetPosition(-14);
+            claw.setPosition(0.78);
+            while (runningautopixel == 1) {
+                if (armExtension.getCurrentPosition() == -14) {
+                    if (claw.getPosition() == 0.78) {
+                        wrist.setPosition(0.9);
+                        if (wrist.getPosition() == 0.9) {
+                            armBase.setTargetPosition(0);
+                            if (armBase.getCurrentPosition() == 0) {
+                                claw.setPosition(0.9);
+                                if (claw.getPosition() == 0.9) {
+                                    runningautopixel = 0;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    public void dropPixel() {
-        armExtension.setTargetPosition(0);
-        armBase.setTargetPosition(0);
-        wrist.setPosition(0);
-        armExtension.setTargetPosition(0);
+
+    public void dropOff(int target) { //1 = board 2 = spikes
+        int xtarget;
+        int runningautodropoff;
+        // TODO: Enter the type for variable named target
+        int ytarget;
+        int targetbearing;
+        // TODO: Enter the type for variable named robotbearing
+        double robotbearing = //bearing RR;
+        // TODO: Enter the type for variable named robotx
+        double robotx = //xcoordinate RR;
+        // TODO: Enter the type for variable named roboty
+        double roboty = //y coordinate RR;
+
+                armExtension = hardwareMap.get(DcMotor.class, "armExtension");
+        armBase = hardwareMap.get(DcMotor.class, "armBase");
+        wrist = hardwareMap.get(Servo.class, "wrist");
+        claw = hardwareMap.get(Servo.class, "claw");
+
+        // Put initialization blocks here.
+        // set target as 1 for the board, and 2 for the spikes
+
+        // only run this when the robot has the pixel (using autopickup
+        runningautodropoff = 1;
+        while (runningautodropoff == 1) {
+            // update robotx, roboty, and robotbearing here
+            if (target == 1) {
+                xtarget = 0;
+                ytarget = 0;
+                targetbearing = 0;
+                // move to the board (set x and y target to the board pos and move to it using roadrunner)
+                if (robotx == xtarget && roboty == ytarget && robotbearing == targetbearing) {
+                    armExtension.setTargetPosition(0);
+                    armBase.setTargetPosition(0);
+                    wrist.setPosition(0);
+                    if (armBase.getCurrentPosition() == 0 && armExtension.getCurrentPosition() == 0 && wrist.getPosition() == 0) {
+                        claw.setPosition(0);
+                        if (claw.getPosition() == 0) {
+                            runningautodropoff = 0;
+                            break;
+                        }
+                    }
+                }
+            } else if (target == 2) {
+                xtarget = 0;
+                ytarget = 0;
+                // move to the spike (set x and y target to the spike pos and move to it using roadrunner)
+                if (robotx == xtarget && roboty == ytarget && robotbearing == targetbearing) {
+                    armExtension.setTargetPosition(0);
+                    armBase.setTargetPosition(0);
+                    wrist.setPosition(0);
+                    if (armBase.getCurrentPosition() == 0 && armExtension.getCurrentPosition() == 0 && wrist.getPosition() == 0) {
+                        claw.setPosition(0);
+                        if (claw.getPosition() == 0) {
+                            runningautodropoff = 0;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
+
 
